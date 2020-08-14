@@ -12,5 +12,6 @@ Reading in data in R
 
 Exploring data structure
 
-Data manipulation using dplyr Verbs; Mutate, filter, group_by,summarise,arrange, select, rename 
+Data manipulation using dplyr Verbs; mutate, filter, group_by,summarise,arrange, select, rename 
+
 Piping
