@@ -1,4 +1,4 @@
-# data-manipulation-in-R
+# Data-manipulation-in-R (Part 1)
 
 The tutorial covers:
 
