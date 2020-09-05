@@ -1,0 +1,445 @@
+---
+title: "Introduction to data management and analysis in R"
+author: "Naomi Ng'ang'a, ICHA"
+date: ''
+output:
+  html_document: 
+    toc: yes
+    toc_depth: 4
+  word_document: default
+---
+
+#### Instructions
+
+Run the chunks below by clicking on > button on every chunk(gray boxes with r commands)
+
+
+### The R Language: Basic Syntax
+
+It is important to learn some basic syntax of the R programming language before launching in to more sophisticated functions Below is a compilation of some of the basic features of R that will get you going and help you to understand the R language.
+
+
+Data can be entered directly into R or loaded from external sources. To get a sense of how R handles different data inputs, we will begin with entering data on our own.
+
+First note that, R can be used as a very fancy calculator without creating any “objects” at all.
+
+
+###### R prompt 
+
+The default R prompt is the greater-than sign (>)
+
+```{r}
+ 2*3
+
+sqrt(144)
+
+10^2
+
+log(10)
+```
+
+###### Continuation prompt
+
+If a line is not syntactically complete, a continuation prompt (+) appears
+
+```{r}
+2*
+  3
+```
+
+As our analyses increase in complexity, however, we may want to store values from particular operations into “objects,” which we can then call later for additional analysis.
+
+
+#### Commands, objects and functions
+
+R uses 'commands' that are typed into the console window
+
+Commands in R are generally made up of two parts: objects and functions :example 
+
+Object <- function
+
+The assignment operator is the left arrow (<-) or equal sign(=) and assigns the value of the object on the right to the object on the left, which roughly means “store 2*4 in object value”
+
+```{r}
+value <- 2 * 4
+value
+```
+
+#### Legal R Names
+
+Names for R objects can be any combination of letters, numbers and periods (.) but they must not start with a number. R is also case sensitive
+
+
+The type of data we enter can differ, however. We can think about the different data types that R handles in terms of their dimensionality. Single dimension data types will be (atomic) vectors or lists, whereas two-dimensional types will be matrices or dataframes.Within each of these dimensionalities, data may still be of different types.
+
+#### Data types in R
+
+We have 2 broad range of variables in R; categorical and numeric variables
+
+where categorical variables can further be classified into;
+
+Norminal- categorical variable with two or more levels/ groups that cannot be ranked (character)
+
+Binary- nominal variable with only two levels (logic)
+
+Ordinal-categorical variable with two or more levels/ groups that can be ranked or ordered (factor)
+
+Numeric varibles are also further classified into:
+
+Discreate - whole numerical variable e.g count of people (Integer)
+
+Continous - can take values within any range e.h height (numeric)
+
+
+Knowing what type of data you are using and how it is organized is critical to using functions and conducting your analysis.It also guides in choosing the correct type of statistical analysis.hence the need to change the types to the format that will help in achieving your goal.
+
+
+#### Creating vectors (Variables)
+
+The simplest way to create a vector is through the concatenation function, c. This function binds elements together, whether they are of character form, numeric or logical.
+
+```{r}
+First_name=c("Naomi","Steve","Michael","Humphrey","Betty") 
+First_name
+
+ID=c(3206756,29200883,33062552,45727229,1272892)
+
+ID
+
+```
+
+The rep function replicates elements of vectors
+
+```{r}
+Gender=c("Female",rep("Male",3),"Female")
+Gender
+```
+
+#### Creating a data frame
+ 
+The function data.frame converts a matrix or collection of vectors into a data frame
+
+```{r}
+attendance_list=data.frame(First_name,Gender,ID)
+head(attendance_list)
+
+# check class of the object
+
+class(attendance_list)
+
+```
+
+List all the objects in your local workspace using ls()
+List all the files in your working directory using list.files() or dir()
+
+```{r}
+ls()
+dir()
+
+```
+
+
+#### Removing Objects 
+
+The functions rm() or remove() are used to remove objects from the working directory
+
+```{r}
+rm(attendance_list)
+
+# Remove everything in the workspace
+rm(list=ls())
+
+```
+
+#### Getting Help
+
+R can seem complex, but it also provides many built-in help functions, particularly when you are using new packages. To get help in R on a specific function or an object or alternatively an operator, one of the following commands can be issued:
+
+?function
+
+help(function)
+
+or click on the Help menu within R.
+
+#### Exercise
+
+***********************************Break out Exercise****************************************
+
+Create a data frame  containing information about your family members, names,age, favorite food, sport, status etc 
+
+
+### Data management
+
+Now in most cases you will have a dataset ready.
+
+You will learn how to easily perform data manipulation using R software. We’ll cover the following data manipulation techniques:
+
+  + filtering and ordering rows
+  
+  + renaming and adding columns
+  
+  + computing summary statistics
+
+We’ll use mainly the popular dplyr R package , which contains important R functions to carry out easily your data manipulation. In the final section, we’ll show you how to group your data by a grouping variable, and then compute some summary statitistics on each subset. You will also learn how to chain your data manipulation operations.
+
+#### 1. Set a working directory
+ 
+R works best if you have a dedicated folder for each separate project. This is referred to as the working folder. This makes R sessions more manageable and it avoids objects getting messed up or mistakenly deleted.
+
+To Determine which directory your R session is using as its current working directory use 
+
+```{r}
+getwd()
+
+setwd("C:/Users/Admin/Documents/Icha/trainings/data-manipulation-in-R/data-manipulation-in-R")
+```
+
+#### 2. Installing and loading R packages
+
+We recommend to install the tidyverse packages, which include the dplyr package (for data manipulation) and additional R packages for easily reading (readr), transforming (tidyr) and visualizing (ggplot2) datasets.
+
+```{r}
+#install.packages("tidyverse")
+
+# Once you have installed the package, you will need to call it in each additional script file where you want to use it.
+
+library("dplyr")
+
+#R comes with several packages pre-loaded, but you can always check which packages are currently installed.
+
+#library()
+
+```
+
+Also note that sometimes packages depend on each other. If you load one package, it may also load “dependencies” that allow it to function. By the same token, several packages might have functions using the same name. This means that whichever package you load last will “mask” that function from other packages. R will notify you that it has masked a function so that you know which package’s function is currently in use. If you want to use two functions of the same name in different packages that you’ve loaded, you can do that by using packagename::functionname.
+
+There are 8 fundamental data manipulation verbs that you will use to do most of your data manipulations. These functions are included in the dplyr package:
+
+  + filter(): Pick rows (observations/samples) based on their values.
+  
+  + distinct(): Remove duplicate rows.
+  
+  + arrange(): Reorder the rows.
+  
+  + select(): Select columns (variables) by their names.
+  
+  + rename(): Rename columns.
+  
+  + mutate() and transmutate(): Add/create new variables.
+  
+  + summarise(): Compute statistical summaries (e.g., computing the mean or the sum)
+
+#### 3.Reading in data into R
+
+We shall use Kenya accident data from the humanitarian data exchange platform
+
+```{r}
+accidents_2016 <- read.csv("./datasets/kenya-accidents-database.csv",stringsAsFactors = F)
+
+#To read in other excel format files you will need to use readxl package
+
+accidents_2017 <- readxl::read_xlsx("./datasets/kenya-accidents-database.xlsx",sheet = "2017")
+
+#To read in other data formats such as stata files you will use the foreign package
+```
+
+It is always a good idea to get a sense of the data. Key R commands for doing so include,  names(), head(), tail(),View(), edit() and summary()
+
+
+#### 4. Adding new variable to a data frame 
+
+```{r}
+## add a column that indicate that this is kenya's data
+
+accidents_2017 <-  mutate(accidents_2017,Country="Kenya")
+
+
+## Prac.. generate a variable that indicates that the data is owned by HDX
+
+
+## generating  new variable from an existing one
+
+accidents_2017<- mutate(accidents_2017,Gender1=ifelse(GENDER=="F","Female","Male"))
+
+accidents_2017<- mutate(accidents_2017,location=paste(ROAD,PLACE,sep=","))
+
+
+```
+
+#### 5. renaming  variables 
+
+```{r}
+## selecting  only relevant variables  and store them in another object
+
+accidents_2017 <-rename(accidents_2017,Details=`BRIEF ACCIDENT DETAILS`)
+
+accidents_2017 <-rename(accidents_2017,"Date"="Date DD/MM/YYYY")
+
+
+## Prac..rename date column  and Base/ sub base to more intuitive names e.g Date,Base_subBase
+
+
+```
+
+
+#### 6. selecting  variables 
+
+```{r}
+## selecting  only relevant variables  and storing them in another object
+
+acc_summ <-select(accidents_2017,`BASE/SUB BASE`,Details,Month,Hour,`MV INVOLVED`,VICTIM,`CAUSE CODE`)
+
+## use select() to reorder variables
+
+#You can specify a particular ordering of columns with select(). To place the remaining columns in their current ordering, use everything(). You can also rename variables with select.
+
+# prac.. arrange your dataframe to start with Month, time and car involved
+
+```
+
+
+#### 7. sorting variables 
+
+```{r}
+## selecting  only relevant variables  and store them in another object
+
+acc_summ <-arrange(acc_summ,Month)
+
+# To display the data in descending order, surround a sorting variable with desc() to sort 
+
+
+# prac.. sort Victim type in descending order 
+
+
+```
+
+#### 8. Subsetting observations
+
+We can select a particular row and column of data frame x, with the syntax x[rows, columns], where rows and columns are one of the following: a number, a vector of numbers, the name of a variable that stores numbers, or omitted.
+
+Omitting the row value x[, columns] selects all rows, and omitting the column value, x[rows, ], selects all columns. (Using this syntax to extract a row or column will result in a data.frame, not a vector)
+
+The syntax x$colname extracts the column with name colname as a vector. 
+
+Here are some operators and functions to help with selection:
+
++ ==: equality
+
++ >,>=: greater than, greater than or equal to
+
++ !: not
+
++ &: AND
+
++ |: OR
+
++ %in%: matches any of (2 %in% c(1,2,3) = TRUE)
+
++ is.na(): equality to NA
+
+```{r}
+## select only relevant variables  and store them in another object
+
+acc_summ1 <-filter(acc_summ,Details=="HIT & RUN")
+
+# prac.. filter out if time is UNKNOWN 
+
+
+```
+
+#### 9. Keep unique values
+
+```{r}
+
+## removing duplicated records in terms of cause code, MV involved and base
+
+dups<- distinct(acc_summ,`BASE/SUB BASE`,`MV INVOLVED`,`CAUSE CODE`,.keep_all = T)
+
+
+```
+
+```{r}
+## check duplicated records 
+
+dups<- acc_summ[duplicated(acc_summ),]
+
+## check duplicated records in terms of cause code, MV involved and base
+
+dups <- acc_summ[duplicated(acc_summ[,c('BASE/SUB BASE','MV INVOLVED','CAUSE CODE')]) | duplicated(acc_summ[,c('BASE/SUB BASE','MV INVOLVED','CAUSE CODE')], fromLast=TRUE),]
+
+```
+
+#### 10. Piping 
+
+Some times you might want to chain/combine your operations, we use piping %>% 
+
+you start with your main object (me) and pipe (%>%) through this object by filtering, selecting, renaming, … parts of it
+
+```{r}
+## so combining the above commands 
+
+acc_summ <-  accidents_2017 %>% 
+  mutate(Country = "Kenya") %>% 
+    select(`BASE/SUB BASE`,Details,Month) %>% 
+  rename(Base = `BASE/SUB BASE`) %>% 
+  filter(Details == "HIT & RUN") %>% 
+  arrange(Month)
+
+```
+
+#### 11.Summarizing data by groups
+
+For many datasets we want to calculate statistics by group, rather than over the whole dataset.
+
+The dplyr functions group_by() and summarise() together greatly simplify group operations.
+
+First, we group our dataset by a grouping variable. Next we use summarise() and statistical or numerical functions to summarize variables by group.
+
+Example of useful functions for summarise():
+
+min(), max(), mean(), sum(), var(), sd()
+n(): number of observations in the group
+n_distinct(x): number of distinct values in variable x
+
+
+```{r}
+
+### calculate number of accidents across months
+
+summ <- accidents_2017%>%
+  group_by(Month) %>%
+  summarise(accidents=n())
+
+## Identfy most frequent accident type
+
+summ <- accidents_2017%>%
+  group_by(Details) %>%
+  summarise(accidents=n())
+
+## affected gender by accidents
+
+summ <- accidents_2017%>%
+  group_by(Month,Gender1) %>%
+  summarise(accidents=n())
+
+# prac.. Accident hotspot counties 
+
+# prac.. which months do accidents occur mostly in each county 
+
+```
+
+### group work exercises
+
+1: remove all objects in your working except for the initial 2017 data
+
+2: rename column names that have spaces to have underscores instead of spaces   
+
+3: Subset the data to have data for Nairobi metropolitan counties only (Nairobi,Kiambu, Machakos, Kajiado,Muranga) and cal it "NMS_data"
+
+4: Remove irrelevant variables from the dataset such as No., name of victim, places
+
+5: Using NMS_data find out which county has experienced the highest number of accidents
+
+6: Using NMS_data find out which month do accidents occurs more rampantly  and the counties
+
+
